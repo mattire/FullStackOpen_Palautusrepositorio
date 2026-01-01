@@ -98,6 +98,7 @@ sequenceDiagram
     activate browser
     Note left of browser: xhttpForPost.send(<br>JSON.stringify(note))
     browser->>server: POST: https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+    server->>browser: {"message":"note created"}
     deactivate browser
     activate server
 
