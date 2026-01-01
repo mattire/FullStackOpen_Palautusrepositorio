@@ -2,6 +2,8 @@ osan 0 tehtävien vastaukset
 
 # 0.4: Uusi muistiinpano
 
+(DOM = document object model)
+
 ```mermaid
 sequenceDiagram
     actor user
@@ -14,24 +16,30 @@ sequenceDiagram
     activate server
     server->>browser: 302 FOUND, (redirect)
     deactivate server
+    browser->>server: POST: https://studies.cs.helsinki.fi/exampleapp/notes
+    activate server
+    server->>browser: 200 OK, notes
+    deactivate server
 
-    browser->>browser: check refs
-
+    browser->>browser: fetch refs
+    activate browser
+    Note right of browser:/exampleapp/main.css, /exampleapp/main.js
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
     activate server
     server->>browser: 200 OK, main.css
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.js
     server->>browser: 200 OK, main.js
-    browser->>server: Get https://studies.cs.helsinki.fi/exampleapp/kuva.png
-    server->>browser: 200 OK, kuva.png
+    deactivate browser
     deactivate server
-    browser->>browser: run js
+    browser->>browser: run main.js
     activate browser
-    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
+    deactivate browser
     server->>browser: 200 OK, data.json
     browser->>browser: onreadystatechange (readyState == 4 && status == 200) callback
+    activate browser
     browser->>DOM: createElements (ul, li),<br>appendChild
-    browser->>user: render page
+    browser->>user: rendered page
     deactivate browser
 ```
 
@@ -45,21 +53,30 @@ sequenceDiagram
     participant server
 
     user->>browser: User selects link
+    activate browser
     browser->>server: Get https://studies.cs.helsinki.fi/exampleapp/spa
+    deactivate browser
     server->>browser: 200 OK, spa
-
+    browser->>browser: fetch refs
+    activate browser
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
     activate server
     server->>browser: 200 OK, main.css
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/spa.js
     server->>browser: 200 OK, spa.js
-
+    deactivate browser
     browser->>browser: run spa.js
+    activate browser
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
+    deactivate browser
+    activate server
     server->>browser: 200 OK, data.json
+    deactivate server
     browser->>browser: execute js: xhttp.onreadystatechange
+    activate browser
     browser->>DOM: redrawNotes, createElements
-    browser->>user: render page
+    browser->>user: rendered page
+    deactivate browser
 ```
 
 # 0.6: Uusi muistiinpano
@@ -71,16 +88,17 @@ sequenceDiagram
     participant DOM
     participant server
 
-    user->>browser: User selects save
-    browser->>browser: onSubmit triggered,
-    Note left of browser: Browser adds new note to DOM (notes.push(note))
-    browser->>DOM: Add new note,
-    Note left of browser: The browser executes the <br>callback function that renders the notes
+    user->>browser: User selects save or presses enter
+    browser->>browser: onSubmit triggered, => execute js function
     browser->>browser: redrawNotes,
+    Note left of browser: js script adds new note to notes list<br>(notes.push(note)) then calls reDrawsNotes <br> rebuilds the ul list, <br> clears the earlier ul list, and adds new <br> ul list to DOM
+    browser->>DOM: notesElement.appendChild(ul)
     browser->>user: Rendered page
-
-    Note left of browser: xhttpForPost.send()
-    browser->>server: sendToServer(note)
+    browser->>browser: sendToServer,
+    activate browser
+    Note left of browser: xhttpForPost.send(<br>JSON.stringify(note))
+    browser->>server: POST: https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+    deactivate browser
     activate server
 
     deactivate server
