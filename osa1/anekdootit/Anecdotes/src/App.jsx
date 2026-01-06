@@ -34,16 +34,7 @@ function App() {
     const maxVal = Math.max(...votes)
     
     const ind = votes.indexOf(maxVal)
-    // TODO VOTES COUNT!!!
-    
-    //return anecdotes[ind],maxVal
     return [ind,maxVal]
-    // return (
-    //   <div>
-    //   {anecdotes[ind]} <br/>
-    //   has {maxVal} votes <br/>
-    //   </div>
-    // )
   }
 
   const [maxAnecInd, maxCount] = AnecdoteWithMaxVotes()
@@ -59,7 +50,6 @@ function App() {
       <Button content="Vote"          onClick={()=> Vote()}/>
       <Button content="Next anecdote" onClick={()=> NextAnectDote()}/>
       <h1>Anecdote with most votes!!</h1>
-      {/* <AnecdoteWithMaxVotes></AnecdoteWithMaxVotes> */}
       <p>{maxAn}</p>
       <p>{maxCount}</p>
     </div>
