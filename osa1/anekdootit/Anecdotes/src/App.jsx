@@ -38,7 +38,7 @@ function App() {
   }
 
   const [maxAnecInd, maxCount] = AnecdoteWithMaxVotes()
-  var maxAn = anecdotes[maxAnecInd]
+  const maxAn = anecdotes[maxAnecInd]
   
   return (
     <div>
