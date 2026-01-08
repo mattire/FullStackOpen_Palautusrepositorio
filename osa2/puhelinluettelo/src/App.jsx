@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const Filter  = ({newFilterTxt, filterTextChanged}) => { 
   return ( <div>
@@ -33,15 +34,25 @@ const PersonForm  = ({addNumber, newName, nameChanged, newNumber, numberChanged}
 
 const Persons  = ({persons, newFilterTxt}) => { 
   return <ul>
-    {persons.filter(p=>p.name.toLowerCase().includes(newFilterTxt.toLowerCase())).map(p=><li>{p.name} {p.number}</li> )}
+    {persons.filter(p=>p.name.toLowerCase().includes(newFilterTxt.toLowerCase())).map(p=><li key={p.key}>{p.name} {p.number}</li> )}
   </ul>
 }
 
-
 const App = () => {
+  
+  
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-14489422' }
+    //{ key: 0, name: 'Arto Hellas', number: '040-14489422' }
   ]) 
+
+  useEffect(()=>{
+      axios.get('http://localhost:3001/persons').then(resp=> {
+          const personsFromServer = resp.data
+          //console.log(personsFromServer)
+          setPersons(personsFromServer)
+      })  
+  }, [])
+
   const [newFilterTxt, setNewFilterTxt] = useState('')
   const [newName, setNewName]           = useState('new person')
   const [newNumber, setNewNumber]       = useState('000-0000000')
@@ -54,7 +65,7 @@ const App = () => {
     if(persons.some(p=>p.name===newName)){
       alert(`${newName} is already added to phonebook`)
     } else {
-      setPersons(persons.concat({ name: newName, number: newNumber }))
+      setPersons(persons.concat({ key: persons.length, name: newName, number: newNumber }))
     }
   }
 
