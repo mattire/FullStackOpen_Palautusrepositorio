@@ -57,7 +57,9 @@ const App = () => {
   const addNumber = (event) => {
     event.preventDefault()
     if(persons.some(p=>p.name===newName)){
-      alert(`${newName} is already added to phonebook`)
+      if(confirm(`${newName} is already added to phonebook, replase the old number with a new one?`) ){
+        Update()
+      }
     } else {
       const newPerson = { name: newName, number: newNumber }
       personService.create(newPerson).then((r)=>{
@@ -66,6 +68,14 @@ const App = () => {
         setNewNumber('000-0000000')
       }, (r)=> {console.log(r)})
     }
+  }
+
+  const Update = () => {
+    var person = persons.find(p=>p.name===newName)
+    const newPerson = { id: person.id, name: newName, number: newNumber }
+    personService.update(person.id, newPerson).then(r=> {
+      setPersons(persons.map(p => p.id !== person.id ? p : r))
+    })
   }
 
   const filterTextChanged = (event) => {
@@ -84,7 +94,6 @@ const App = () => {
     console.log(id);
     if(confirm(`Delete ${name}?`)){
       personService.remove(id).then((r)=>{
-        //console.log(r);
         setPersons(persons.filter(p=>p.id!=id))
       })
     }
