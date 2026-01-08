@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import personService from './services/persons'
+
 
 const Filter  = ({newFilterTxt, filterTextChanged}) => { 
   return ( <div>
@@ -32,25 +34,20 @@ const PersonForm  = ({addNumber, newName, nameChanged, newNumber, numberChanged}
   )
 }
 
-const Persons  = ({persons, newFilterTxt}) => { 
+const Persons  = ({persons, newFilterTxt, deleteHandler}) => { 
   return <ul>
-    {persons.filter(p=>p.name.toLowerCase().includes(newFilterTxt.toLowerCase())).map(p=><li key={p.key}>{p.name} {p.number}</li> )}
+    {persons.filter(p=>p.name.toLowerCase().includes(newFilterTxt.toLowerCase())).map(
+        p=><li key={p.id}>{p.name} {p.number} 
+        <button accessKey='D' onClick={(e)=> { deleteHandler(p.id, p.name)}} >Delete</button> </li> 
+      )}
   </ul>
 }
 
 const App = () => {
-  
-  
-  const [persons, setPersons] = useState([
-    //{ key: 0, name: 'Arto Hellas', number: '040-14489422' }
-  ]) 
+  const [persons, setPersons] = useState([]) 
 
   useEffect(()=>{
-      axios.get('http://localhost:3001/persons').then(resp=> {
-          const personsFromServer = resp.data
-          //console.log(personsFromServer)
-          setPersons(personsFromServer)
-      })  
+    personService.getAll().then(r => setPersons(r));
   }, [])
 
   const [newFilterTxt, setNewFilterTxt] = useState('')
@@ -59,13 +56,15 @@ const App = () => {
 
   const addNumber = (event) => {
     event.preventDefault()
-    console.log(newName)
-    console.log(newNumber)
-    
     if(persons.some(p=>p.name===newName)){
       alert(`${newName} is already added to phonebook`)
     } else {
-      setPersons(persons.concat({ key: persons.length, name: newName, number: newNumber }))
+      const newPerson = { name: newName, number: newNumber }
+      personService.create(newPerson).then((r)=>{
+        setPersons(persons.concat(r));
+        setNewName('new person')
+        setNewNumber('000-0000000')
+      }, (r)=> {console.log(r)})
     }
   }
 
@@ -74,12 +73,21 @@ const App = () => {
     setNewFilterTxt(event.target.value)
   }
   const nameChanged = (event) => {
-    //console.log(event.target.value)
     setNewName(event.target.value)
   }
   const numberChanged = (event) => {
     console.log(event.target.value)
     setNewNumber(event.target.value)
+  }
+
+  const deleteHandler = (id, name)=>{
+    console.log(id);
+    if(confirm(`Delete ${name}?`)){
+      personService.remove(id).then((r)=>{
+        //console.log(r);
+        setPersons(persons.filter(p=>p.id!=id))
+      })
+    }
   }
 
   return (
@@ -95,7 +103,7 @@ const App = () => {
         numberChanged = {numberChanged}
       />
       <h3>Numbers</h3>
-      <Persons persons={persons} newFilterTxt={newFilterTxt} />
+      <Persons persons={persons} newFilterTxt={newFilterTxt} deleteHandler={ deleteHandler}/>
     </div>
   )
 
