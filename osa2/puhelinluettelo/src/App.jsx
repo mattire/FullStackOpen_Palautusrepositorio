@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import personService from './services/persons'
-
+import './index.css'
+import { Notification } from './components/notification'
+//import { Notification, errorStyle, successStyle } from './components/notification'
 
 const Filter  = ({newFilterTxt, filterTextChanged}) => { 
   return ( <div>
@@ -11,7 +12,7 @@ const Filter  = ({newFilterTxt, filterTextChanged}) => {
             onChange = {filterTextChanged}
           />
     </div>)
-  }
+}
 
 const PersonForm  = ({addNumber, newName, nameChanged, newNumber, numberChanged}) => { 
   return ( 
@@ -43,6 +44,7 @@ const Persons  = ({persons, newFilterTxt, deleteHandler}) => {
   </ul>
 }
 
+
 const App = () => {
   const [persons, setPersons] = useState([]) 
 
@@ -53,6 +55,8 @@ const App = () => {
   const [newFilterTxt, setNewFilterTxt] = useState('')
   const [newName, setNewName]           = useState('new person')
   const [newNumber, setNewNumber]       = useState('000-0000000')
+  const [notification, setNotification] = useState('')
+  const [styleNotification, setStyleNotification] = useState({msg: '', style: 'notif'})
 
   const addNumber = (event) => {
     event.preventDefault()
@@ -66,6 +70,7 @@ const App = () => {
         setPersons(persons.concat(r));
         setNewName('new person')
         setNewNumber('000-0000000')
+        showNotification(`${newName} added`)
       }, (r)=> {console.log(r)})
     }
   }
@@ -74,8 +79,25 @@ const App = () => {
     var person = persons.find(p=>p.name===newName)
     const newPerson = { id: person.id, name: newName, number: newNumber }
     personService.update(person.id, newPerson).then(r=> {
+      showNotification(`${newName} updated`)
       setPersons(persons.map(p => p.id !== person.id ? p : r))
+    }, ()=>{
+      showNotification(`Information of ${newName} has already been removed from server`, true)
     })
+  }
+
+  const showNotification = (txt, err=false) => {
+    if(err){
+      setStyleNotification({ msg: txt, style: "error"} )
+      setTimeout(function() { 
+        setStyleNotification({ msg: '', style: "notif"})
+      }.bind(this), 3000 )
+    } else {
+      setStyleNotification({ msg: txt, style: "notif"} )
+      setTimeout(function() { 
+        setStyleNotification({ msg: '', style: "notif"} )
+      }.bind(this), 3000 )
+    }
   }
 
   const filterTextChanged = (event) => {
@@ -94,6 +116,7 @@ const App = () => {
     console.log(id);
     if(confirm(`Delete ${name}?`)){
       personService.remove(id).then((r)=>{
+        showNotification(`${name} removed`)
         setPersons(persons.filter(p=>p.id!=id))
       })
     }
@@ -101,7 +124,10 @@ const App = () => {
 
   return (
     <div>
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
+      {/* <Notification msg = {notification} style={"error"}/> */}
+      <Notification msg = {styleNotification.msg} style={styleNotification.style}/>
+      {/* <Notification msg = {notification}/> */}
       <Filter newFilterTxt = {newFilterTxt} filterTextChanged = {filterTextChanged} />      
       <h3>Add a new</h3>
       <PersonForm
@@ -115,7 +141,6 @@ const App = () => {
       <Persons persons={persons} newFilterTxt={newFilterTxt} deleteHandler={ deleteHandler}/>
     </div>
   )
-
 }
 
 export default App
