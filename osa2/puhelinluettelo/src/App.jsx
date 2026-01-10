@@ -37,7 +37,8 @@ const PersonForm  = ({addNumber, newName, nameChanged, newNumber, numberChanged}
 
 const Persons  = ({persons, newFilterTxt, deleteHandler}) => { 
   return <ul>
-    {persons.filter(p=>p.name.toLowerCase().includes(newFilterTxt.toLowerCase())).map(
+    {
+      persons.filter(p=>p.name.toLowerCase().includes(newFilterTxt.toLowerCase())).map(
         p=><li key={p.id}>{p.name} {p.number} 
         <button accessKey='D' onClick={(e)=> { deleteHandler(p.id, p.name)}} >Delete</button> </li> 
       )}
@@ -125,9 +126,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      {/* <Notification msg = {notification} style={"error"}/> */}
       <Notification msg = {styleNotification.msg} style={styleNotification.style}/>
-      {/* <Notification msg = {notification}/> */}
       <Filter newFilterTxt = {newFilterTxt} filterTextChanged = {filterTextChanged} />      
       <h3>Add a new</h3>
       <PersonForm
