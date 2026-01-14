@@ -40,7 +40,7 @@ function ObjectDisplay({ data }) {
   );
 }
 
-const Results  = ({filteredResults}) => { 
+const Results  = ({filteredResults, showHandler}) => { 
     const resLen = filteredResults.length;
     //debugger
     if(resLen>10){
@@ -51,22 +51,12 @@ const Results  = ({filteredResults}) => {
       console.log(JSON.stringify(filteredResults));       
       console.log(filteredResults.map( (r) => r.name.common ));
       return <ul> 
-        { filteredResults.map( (r) => <li key={r.name.common}>{r.name.common}</li> ) }
+        { filteredResults.map( (r) => <li key={r.name.common}>{r.name.common} <button onClick={()=>{ showHandler(r);}}>Show</button> </li> ) }
       </ul>
     }
     else if (resLen==1){
       var name = filteredResults[0].name.common
       return <h1>{name}</h1>
-      countrieService.getByName(name).then((res)=>{
-        console.log(JSON.stringify(res));
-        console.log(res);
-        console.log(name);
-        return <div>
-          <h1>{name}</h1>
-        </div>
-      })
-      
-
     }
 }
 
@@ -90,6 +80,10 @@ const App = () => {
       setCountryObjRes(r); 
     })
     }, countryNameRes)  
+
+  const showHandler = (item) => {  
+    setFilteredResults([item])
+  };
 
   const queryFunc = (searchStr) => {
     const res = countries.filter(c=> c.name.common.toLowerCase().includes(searchStr.toLowerCase()))    
@@ -120,7 +114,7 @@ const App = () => {
   return (
     <div>
       <Filter all={countries} queryFunc={queryFunc}></Filter>
-      <Results filteredResults={filteredResults}></Results>
+      <Results filteredResults={filteredResults} showHandler={showHandler}></Results>
       {/* <CountryResult countryObjRes= {countryObjRes}></CountryResult>       */}
       {showFlag && (
         <div>
