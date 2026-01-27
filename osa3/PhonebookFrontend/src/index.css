@@ -1,0 +1,19 @@
+.notif {
+  color: green;
+  font-size: 20pt; 
+  font-style: bold;
+  background-color: lightgray;
+  border: 3px solid green;
+  /* text-transform: capitalize; */
+  /* text-transform: uppercase; */
+}
+
+.error {
+  color: red;
+  font-size: 20pt; 
+  font-style: bold;
+  background-color: lightgray;
+  border: 3px solid red;
+  /* text-transform: capitalize; */
+  /* text-transform: uppercase; */
+}
