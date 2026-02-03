@@ -121,3 +121,18 @@ describe('favorite blog', () => {
     assert.strictEqual(result.title, 'Canonical string reduction')
   })
 })
+
+describe('most blogs', () => {
+  test('of bigger list', () => {
+    const result = listHelper.mostBlogs(testBlogLst)
+    assert.deepStrictEqual(result, { author: "Robert C. Martin", blogs: 3 } )
+    //assert.strictEqual(result, 'Robert C. Martin')
+  })
+})
+
+describe('most likes', () => {
+  test('of bigger list', () => {
+    const result = listHelper.mostLikes(testBlogLst)
+    assert.deepStrictEqual(result, { author: "Edsger W. Dijkstra", likes: 17 } )
+  })
+})
