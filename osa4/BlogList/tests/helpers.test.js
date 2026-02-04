@@ -2,7 +2,7 @@ const { test, describe } = require('node:test')
 const assert = require('node:assert')
 const listHelper = require('../utils/list_helper')
 
-  const testBlogLst = [
+const testBlogLst = [
   {
     _id: "5a422a851b54a676234d17f7",
     title: "React patterns",
