@@ -93,20 +93,51 @@ describe('returning blogs', () => {
   })
 })
 
-
-test('blogs can be added', async () => {
-  const newBlog = {
-        title: 'Grand Central Train Station',
-        author: 'Erin Brockovich',
-        url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/grand_central.html',
-        likes: 15,
-      }
-  await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
-
-  var db_blogs = await utils.blogsInDb()
-  var titles = db_blogs.map(b=>b.title)
+describe('adding new blogs', () => {  
+  test('blogs can be added', async () => {
+    const newBlog = {
+          title: 'Grand Central Train Station',
+          author: 'Erin Brockovich',
+          url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/grand_central.html',
+          likes: 15,
+        }
+    await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
   
-  assert(titles.includes('Grand Central Train Station'))
+    var db_blogs = await utils.blogsInDb()
+    var titles = db_blogs.map(b=>b.title)
+    
+    assert(titles.includes('Grand Central Train Station'))
+  })
+
+  test('blogs added, having no likes, are assigned 0 likes', async () => {  
+    const newBlog = {
+          title: 'In Motion',
+          author: 'Trenz Reznor and Atticus Ross',
+          url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/in_motion.html'
+        }
+    const resp = await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
+    //console.log(resp.body);
+    
+    assert( Object.hasOwn(resp.body, 'likes'))
+  })
+
+  test('check no title returns bad request', async () => {  
+    const newBlog = {
+          author: 'Erin Brockovich',
+          url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/grand_central.html',
+          likes: 15,
+        }
+    await api.post('/api/blogs').send(newBlog).expect(400)
+  })
+
+  test('check no url returns bad request', async () => {  
+        const newBlog = {
+          title: 'Grand Central Train Station',
+          author: 'Erin Brockovich',
+          likes: 15,
+        }
+    await api.post('/api/blogs').send(newBlog).expect(400)
+  })
 })
 
 describe('blogs editing and deleting', () => { 

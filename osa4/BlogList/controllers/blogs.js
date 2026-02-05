@@ -18,17 +18,35 @@ blogsRouter.get('/:id', async (request, response) => {
 })
 
 blogsRouter.post('/', (request, response, next) => {
-  const blog = new Blog(request.body)
-
-  blog.save().then((result) => {
-    response.status(201).json(result)
-  })
+  const body = request.body;
+  
+  if(!Object.hasOwn(body, 'url')){
+    response.status(400).json({ error: 'content missing' })
+  } 
+  else if(!Object.hasOwn(body, 'title'))
+  {
+    response.status(400).json({ error: 'content missing' })
+  } 
+  else 
+  {
+    const blog = new Blog(request.body)
+    // console.log("**************");
+    // console.log(blog);
+    if(!Object.hasOwn(blog, 'likes'))
+    {
+      blog.likes = 0
+    }
+    blog.save().then((result) => 
+    {
+      response.status(201).json(result)
+    })
+  }
 })
 
 blogsRouter.put('/:id', async (request, response, next) => {
   const body = request.body
 
-  console.log(body);
+  //console.log(body);
   
   const blog = {
     title  : body.title ,
@@ -36,7 +54,7 @@ blogsRouter.put('/:id', async (request, response, next) => {
     url    : body.url   ,
     likes  : body.likes 
   }
-  console.log(request.params.id);
+  //console.log(request.params.id);
 
   const updBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
   if(updBlog){
