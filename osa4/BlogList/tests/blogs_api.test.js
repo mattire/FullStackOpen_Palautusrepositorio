@@ -1,4 +1,4 @@
-const { test, after, beforeEach } = require('node:test')
+const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 
 const mongoose = require('mongoose')
@@ -6,6 +6,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
 //const helper = require('./initialBlogs')
+const utils = require('./test_util')
 
 const api = supertest(app)
 
@@ -68,28 +69,81 @@ beforeEach(async () => {
 
 })
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+
+describe('returning blogs', () => {  
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+  
+  test('right amount of blogs are returned', async () => {
+    const response = await api.get('/api/blogs')
+    assert.strictEqual(response.body.length, 6)
+  })
+  
+  test('blogs are returned have an id field instead of _id', async () => {
+    const response = await api.get('/api/blogs')
+    response.body.map(b=> { 
+        const hasId = Object.hasOwn(b, 'id')
+        assert.strictEqual(hasId, true)
+      }
+    )
+  })
 })
 
-test('right amount of blogs are returned', async () => {
-  const response = await api.get('/api/blogs')
-  assert.strictEqual(response.body.length, 6)
+
+test('blogs can be added', async () => {
+  const newBlog = {
+        title: 'Grand Central Train Station',
+        author: 'Erin Brockovich',
+        url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/grand_central.html',
+        likes: 15,
+      }
+  await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
+
+  var db_blogs = await utils.blogsInDb()
+  var titles = db_blogs.map(b=>b.title)
+  
+  assert(titles.includes('Grand Central Train Station'))
 })
 
-test.only('blogs are returned have an id field instead of _id', async () => {
-  const response = await api.get('/api/blogs')
-  response.body.map(b=> { 
-      const hasId = Object.hasOwn(b, 'id')
-      assert.strictEqual(hasId, true)
+describe('blogs editing and deleting', () => { 
+  test('blogs can be edited', async () => {  
+    const blogsAtStart = await utils.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+    const updatedTitle = 'Updated title !!!'
+    const updatedBlog = {
+      title : updatedTitle,
+      author:blogToUpdate.author + 'upd',
+      url   :blogToUpdate.url    + 'upd',
+      likes :blogToUpdate.likes+=1
     }
-  )
-})
+    console.log('updating blog', blogToUpdate.id);
+    const url = `/api/blogs/${blogToUpdate.id}`
+    console.log(url);
+    const res = await api.put(url).send(updatedBlog).expect(200).expect('Content-Type', /application\/json/)
+    const blogsAtEnd = await utils.blogsInDb()
+    const titles = blogsAtEnd.map(b=>b.title)
+    assert(titles.includes(updatedTitle))      
+  })
 
-
+  test('blogs can be deleted', async () => {  
+    const blogsAtStart = await utils.blogsInDb()
+    const blogToDel = blogsAtStart[0]
+    const url = `/api/blogs/${blogToDel.id}`
+    console.log(url);
+    try {
+      await api.delete(url).expect(204)
+      const blogsAtEnd = await utils.blogsInDb()
+      const ids = blogsAtEnd.map(b=>b.id)
+      assert(!ids.includes(blogToDel.id))      
+    } catch (error) {
+      console.log(error);
+    }
+  })
+ })
 
 after(async () => {
   await mongoose.connection.close()

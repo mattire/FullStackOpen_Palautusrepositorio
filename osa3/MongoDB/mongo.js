@@ -5,11 +5,13 @@ const personSchema = new mongoose.Schema({
     name: String,
     number: String,
 });
+
 console.log('here');
 
 const Person = mongoose.model('Person', personSchema);
 
 function AddPerson(url, name, number ){
+    
     const person = new Person({
         name: name,
         number: number,
