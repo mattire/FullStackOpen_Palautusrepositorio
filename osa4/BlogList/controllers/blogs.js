@@ -2,10 +2,12 @@ const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const Log = require('../utils/logger')
 
-blogsRouter.get('/', (request, response) => {
-  Blog.find({}).then((blogs) => {
-    response.json(blogs)
-  })
+blogsRouter.get('/', async (request, response) => {
+  //Blog.find({}).then((blogs) => {
+  //  response.json(blogs)
+  //})
+  const results = await Blog.find({})
+  response.status(200).json(results)
 })
 
 blogsRouter.get('/:id', async (request, response) => {
@@ -17,7 +19,7 @@ blogsRouter.get('/:id', async (request, response) => {
   }
 })
 
-blogsRouter.post('/', (request, response, next) => {
+blogsRouter.post('/', async (request, response, next) => {
   const body = request.body;
   
   if(!Object.hasOwn(body, 'url')){
@@ -36,10 +38,13 @@ blogsRouter.post('/', (request, response, next) => {
     {
       blog.likes = 0
     }
-    blog.save().then((result) => 
-    {
-      response.status(201).json(result)
-    })
+    const savedBlog = await blog.save()
+    response.status(201).json(savedBlog)
+
+    //blog.save().then((result) => 
+    //{
+    //  response.status(201).json(result)
+    //})
   }
 })
 
