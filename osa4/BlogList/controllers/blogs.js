@@ -50,9 +50,7 @@ blogsRouter.post('/', async (request, response, next) => {
 
 blogsRouter.put('/:id', async (request, response, next) => {
   const body = request.body
-
-  //console.log(body);
-  
+    
   const blog = {
     title  : body.title ,
     author : body.author,
