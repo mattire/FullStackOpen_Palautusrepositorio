@@ -7,6 +7,7 @@ const app = require('../app')
 const Blog = require('../models/blog')
 //const helper = require('./initialBlogs')
 const utils = require('./test_util')
+const config = require('../utils/config')
 
 const api = supertest(app)
 
@@ -60,13 +61,19 @@ const testBlogLst = [
     __v: 0
     }  ]
 
+let token = ''
+
 beforeEach(async () => {
   await Blog.deleteMany({})
   const blogObjects = testBlogLst
     .map(blog => new Blog(blog))
   const promiseArray = blogObjects.map(blog => blog.save())
   await Promise.all(promiseArray)
-
+  
+  const resp = await api.post('/api/login').send({"username": "MatTire","password": `${config.TEST_PASSWORD}`})
+  //const resp = await api.post('/api/login').send({"username": "MatTire","password": "archimedes"})
+  console.log(resp.body);
+  token = resp.body.token
 })
 
 
@@ -95,13 +102,18 @@ describe('returning blogs', () => {
 
 describe('adding new blogs', () => {  
   test('blogs can be added', async () => {
+    
     const newBlog = {
           title: 'Grand Central Train Station',
           author: 'Erin Brockovich',
           url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/grand_central.html',
           likes: 15,
         }
-    await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
+
+
+    await api.post('/api/blogs')
+              .set('Authorization', `Bearer ${token}`)
+              .send(newBlog).expect(201).expect('Content-Type', /application\/json/)
   
     var db_blogs = await utils.blogsInDb()
     var titles = db_blogs.map(b=>b.title)
@@ -115,7 +127,9 @@ describe('adding new blogs', () => {
           author: 'Trenz Reznor and Atticus Ross',
           url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/in_motion.html'
         }
-    const resp = await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
+    const resp = await api.post('/api/blogs')
+                          .set('Authorization', `Bearer ${token}`)
+                          .send(newBlog).expect(201).expect('Content-Type', /application\/json/)
     //console.log(resp.body);
     
     assert( Object.hasOwn(resp.body, 'likes'))
@@ -127,7 +141,9 @@ describe('adding new blogs', () => {
           url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/grand_central.html',
           likes: 15,
         }
-    await api.post('/api/blogs').send(newBlog).expect(400)
+    await api.post('/api/blogs')
+              .set('Authorization', `Bearer ${token}`)
+              .send(newBlog).expect(400)
   })
 
   test('check no url returns bad request', async () => {  
@@ -136,7 +152,9 @@ describe('adding new blogs', () => {
           author: 'Erin Brockovich',
           likes: 15,
         }
-    await api.post('/api/blogs').send(newBlog).expect(400)
+    await api.post('/api/blogs')
+              .set('Authorization', `Bearer ${token}`)
+              .send(newBlog).expect(400)
   })
 })
 
