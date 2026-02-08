@@ -30,21 +30,31 @@ blogsRouter.get('/:id', async (request, response) => {
 //   return null
 // }
 
-blogsRouter.post('/', async (request, response, next) => {
-  const body = request.body;
-  
-  //const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+const getUserFromToken = async (request, response) => {
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
   if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
+    response.status(401).json({ error: 'token invalid' })
+    return null
   }
+
   const user = await User.findById(decodedToken.id)
-  //const user = await User.findById(body.userId)
 
   if (!user) {
-    return response.status(400).json({ error: 'userId missing or not valid' })
+    response.status(400).json({ error: 'userId missing or not valid' })
+    return null
   }
+
+  return user
+}
+
+blogsRouter.post('/', async (request, response, next) => {
+  const body = request.body;
+  
+  const user = await getUserFromToken(request, response)
+  if (!user) return
+
+  //console.log('************************');  
 
   if(!Object.hasOwn(body, 'url')){
     response.status(400).json({ error: 'content missing' })
@@ -85,7 +95,27 @@ blogsRouter.post('/', async (request, response, next) => {
   }
 })
 
+
+
 blogsRouter.put('/:id', async (request, response, next) => {
+
+  // const decodedToken = jwt.verify(request.token, process.env.SECRET)
+
+  // if (!decodedToken.id) {
+  //   return response.status(401).json({ error: 'token invalid' })
+  // }
+  // const user = await User.findById(decodedToken.id)
+  // //const user = await User.findById(body.userId)
+
+  // if (!user) {
+  //   return response.status(400).json({ error: 'userId missing or not valid' })
+  // }
+
+  const user = await getUserFromToken(request, response)
+  if (!user) return
+
+
+
   const body = request.body
     
   const blog = {
@@ -107,6 +137,23 @@ blogsRouter.put('/:id', async (request, response, next) => {
 })
 
 blogsRouter.delete('/:id', async (request, response, next) => {
+
+  // const decodedToken = jwt.verify(request.token, process.env.SECRET)
+
+  // if (!decodedToken.id) {
+  //   return response.status(401).json({ error: 'token invalid' })
+  // }
+  // const user = await User.findById(decodedToken.id)
+  // //const user = await User.findById(body.userId)
+
+  // if (!user) {
+  //   return response.status(400).json({ error: 'userId missing or not valid' })
+  // }
+
+  const user = await getUserFromToken(request, response)
+  if (!user) return
+
+
   var res = await Blog.findByIdAndDelete(request.params.id)
   if(res) { 
     Log.info(res)

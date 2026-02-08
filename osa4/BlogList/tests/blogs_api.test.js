@@ -110,7 +110,6 @@ describe('adding new blogs', () => {
           likes: 15,
         }
 
-
     await api.post('/api/blogs')
               .set('Authorization', `Bearer ${token}`)
               .send(newBlog).expect(201).expect('Content-Type', /application\/json/)
@@ -172,7 +171,9 @@ describe('blogs editing and deleting', () => {
     console.log('updating blog', blogToUpdate.id);
     const url = `/api/blogs/${blogToUpdate.id}`
     console.log(url);
-    const res = await api.put(url).send(updatedBlog).expect(200).expect('Content-Type', /application\/json/)
+    const res = await api.put(url)
+                  .set('Authorization', `Bearer ${token}`)
+                  .send(updatedBlog).expect(200).expect('Content-Type', /application\/json/)
     const blogsAtEnd = await utils.blogsInDb()
     const titles = blogsAtEnd.map(b=>b.title)
     assert(titles.includes(updatedTitle))      
@@ -184,7 +185,10 @@ describe('blogs editing and deleting', () => {
     const url = `/api/blogs/${blogToDel.id}`
     console.log(url);
     try {
-      await api.delete(url).expect(204)
+      await api.delete(url)
+              .set('Authorization', `Bearer ${token}`)
+              .expect(204)
+      
       const blogsAtEnd = await utils.blogsInDb()
       const ids = blogsAtEnd.map(b=>b.id)
       assert(!ids.includes(blogToDel.id))      
