@@ -11,9 +11,6 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   const [newBlog, setNewBlog] = useState({ title: '', author:'', url:''}) 
-  // const [title, setTitle] = useState('') 
-  // const [author, setAuthor] = useState('') 
-  // const [url, setUrl] = useState('') 
 
   const lsUser = window.localStorage.getItem('user');
   const loggedIn = lsUser != null;
@@ -27,10 +24,9 @@ const App = () => {
 
   const handleNewBlog = async (e) => {
     e.preventDefault()
-    console.log(newBlog.title, newBlog.author, newBlog.url);   
-    console.log(userOjb.token);
-    console.log(userOjb);
-    //const r = await blogService.postNewBlog(title, author, url, userOjb.id, userOjb.token)
+    // console.log(newBlog.title, newBlog.author, newBlog.url);   
+    // console.log(userOjb.token);
+    // console.log(userOjb);
     const r = await blogService.postNewBlogObj(newBlog, userOjb.id, userOjb.token)
     if(r.request.status==201){
       console.log(r.data);
@@ -110,7 +106,6 @@ const App = () => {
             value={newBlog.title}
             onChange={({ target }) => setNewBlog({...newBlog, title: target.value})}
             />
-            {/* onChange={({ target }) => setTitle(target.value)} */}
         </label><br/>
         <label>
           author:
@@ -119,7 +114,6 @@ const App = () => {
             value={newBlog.author}
             onChange={({ target }) => setNewBlog({...newBlog, author: target.value})}
             />
-            {/* onChange={({ target }) => setAuthor(target.value)} */}
         </label><br/>
         <label>
           url:
@@ -128,7 +122,6 @@ const App = () => {
             value={newBlog.url}
             onChange={({ target }) => setNewBlog({...newBlog, url: target.value})}
             />
-            {/* onChange={({ target }) => setUrl(target.value)} */}
         </label><br/>
         <button type="submit">create</button>
         <br/><br/>
