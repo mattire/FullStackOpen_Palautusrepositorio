@@ -29,7 +29,7 @@ const Blog = ({ blog }) => {
   }
   else {
     return (
-    <div>
+    <div style={blogStyle}>
       {blog.title} {blog.author} <button onClick={ViewBlog}>view</button>
     </div>  
     )
