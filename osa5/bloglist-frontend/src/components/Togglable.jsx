@@ -14,7 +14,6 @@ const Togglable = (props) => {
     return { toggleVisibility }
   })
 
-
   return (
     <div>
       <div style={hideWhenVisible}>

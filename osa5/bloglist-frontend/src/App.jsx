@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import Blog         from './components/Blog'
 import Notification from './components/Notification'
 import NewBlog      from './components/NewBlog'
-import Toggable      from './components/Togglable'
+import Toggleable      from './components/Togglable'
 import blogService  from './services/blogs'
 import loginService from './services/login'
 import './index.css'
@@ -12,8 +12,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser]         = useState(null)
-
-  const [newBlog, setNewBlog] = useState({ title: '', author:'', url:''}) 
 
   const [styleNotification, setStyleNotification] = useState({msg: '', style: 'notif'})
 
@@ -29,17 +27,21 @@ const App = () => {
     )  
   }, [])
 
-  const handleNewBlog = async (e) => {
-    e.preventDefault()
+  const handleNewBlog = async (props) => {
+    const newBlog = props.blog
+    console.log("newBlog") 
+    console.log(props.blog) 
+
     blogFormRef.current.toggleVisibility()
+    //const newBlog = blogFormRef.current.getNewBlog()
 try {
       const r = await blogService.postNewBlogObj(newBlog, userOjb.id, userOjb.token)
       if(r.request.status==201){
-        console.log(r.data);
-        setNewBlog({ title: '', author:'', url:''})
+        //console.log(r.data);
         var newBlogs = blogs.concat(r.data)
         setBlogs(newBlogs)
         setTimedNotif({msg:`Creating blog ${newBlog.title} succeeded`, style : "notif"})
+        props.aftersend()
       } else {
         setTimedNotif({msg:`Creating blog ${newBlog.title} failed`, style: "error"})
       }
@@ -122,14 +124,14 @@ try {
           {userOjb.name} logged in<button onClick={()=> handleLogout()}>logout</button>
         </div><br/>
 
-        <Toggable buttonLabel="Create new blog" ref={blogFormRef}>
+        <Toggleable buttonLabel="Create new blog" ref={blogFormRef}>
           <NewBlog 
-                newBlog={newBlog} 
-                setNewBlog = {setNewBlog}
+                // newBlog={newBlog} 
+                // setNewBlog = {setNewBlog}
                 handleNewBlog = {handleNewBlog}
                 >
           </NewBlog>
-        </Toggable>
+        </Toggleable>
         <h2>blogs</h2>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
