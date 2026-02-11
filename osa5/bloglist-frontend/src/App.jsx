@@ -1,20 +1,23 @@
 import { useState, useEffect } from 'react'
-import Blog from './components/Blog'
-import blogService from './services/blogs'
+import Blog         from './components/Blog'
+import Notification from './components/Notification'
+import blogService  from './services/blogs'
 import loginService from './services/login'
+import './index.css'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
-  const [user, setUser] = useState(null)
+  const [blogs, setBlogs]       = useState([])
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser]         = useState(null)
 
   const [newBlog, setNewBlog] = useState({ title: '', author:'', url:''}) 
 
-  const lsUser = window.localStorage.getItem('user');
+  const [styleNotification, setStyleNotification] = useState({msg: '', style: 'notif'})
+
+  const lsUser   = window.localStorage.getItem('user');
   const loggedIn = lsUser != null;
-  const userOjb = JSON.parse(lsUser)
+  const userOjb  = JSON.parse(lsUser)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -24,19 +27,27 @@ const App = () => {
 
   const handleNewBlog = async (e) => {
     e.preventDefault()
-    // console.log(newBlog.title, newBlog.author, newBlog.url);   
-    // console.log(userOjb.token);
-    // console.log(userOjb);
-    const r = await blogService.postNewBlogObj(newBlog, userOjb.id, userOjb.token)
-    if(r.request.status==201){
-      console.log(r.data);
-      setNewBlog({ title: '', author:'', url:''})
-      // setTitle('')
-      // setUrl('')
-      // setAuthor('')
-      var newBlogs = blogs.concat(r.data)
-      setBlogs(newBlogs)
-    }
+try {
+      const r = await blogService.postNewBlogObj(newBlog, userOjb.id, userOjb.token)
+      if(r.request.status==201){
+        console.log(r.data);
+        setNewBlog({ title: '', author:'', url:''})
+        var newBlogs = blogs.concat(r.data)
+        setBlogs(newBlogs)
+        setTimedNotif({msg:`Creating blog ${newBlog.title} succeeded`, style : "notif"})
+      } else {
+        setTimedNotif({msg:`Creating blog ${newBlog.title} failed`, style: "error"})
+      }
+    } catch (error) {
+      setTimedNotif({msg:`Creating blog ${newBlog.title} failed`, style: "error"})
+    }  
+  }
+
+  const setTimedNotif = (notifObj) => {
+      setStyleNotification(notifObj)
+      setTimeout(function() { 
+        setStyleNotification({ msg: '', style: "notif"})
+      }.bind(this), 4000 )
   }
 
   const handleLogin = async (e) => {
@@ -48,14 +59,19 @@ const App = () => {
       setUsername('')
       setPassword('')
       setUser(jsonUser)
+      setTimedNotif({ msg: 'login successful', style: 'notif'})
     } catch (error) {
       console.log(error);
+      //console.log(error.request.statusText);
+      setTimedNotif({ msg: `login failed ${error.request.statusText} ${error}`, style: 'error'})
     }
   }
 
   const handleLogout = async(e) => {
     window.localStorage.removeItem('user', null);
     setUser(null)
+    //setStyleNotification({ msg: 'logout successful', style: 'notif'})
+    setTimedNotif({ msg: 'logout successful', style: 'notif'})
   }
 
 
@@ -63,6 +79,7 @@ const App = () => {
     return (
       <div> 
         <h2>log in to application</h2>               
+        <Notification msg = {styleNotification.msg} style={styleNotification.style}/>
         <form onSubmit={handleLogin}>
         <div>
         <label>
@@ -90,39 +107,33 @@ const App = () => {
       )
   }
   else{
+
+    const blogInputFields = ["title", "author", "url"]
     return (
       <div>
         <h2>blogs</h2>
+        <Notification msg = {styleNotification.msg} style={styleNotification.style}/>
         <div>
           {userOjb.name} logged in<button onClick={()=> handleLogout()}>logout</button>
         </div><br/>
         <h2>create new</h2>
         <form onSubmit={handleNewBlog}>
+        {blogInputFields.map(field => (
+          <label key={field} style={{ display: "flex", marginBottom: "8px" }}>
+            <div style={{ width: "80px" }}>
+            {field}:
+            </div>
+            <input
+              type="text"
+              value={newBlog[field]}
+              onChange={({ target }) =>
+                setNewBlog({ ...newBlog, [field]: target.value })
+            }
+            />
+            <br />
+          </label>
+        ))}
 
-        <label>
-          title:
-          <input
-            type="text"
-            value={newBlog.title}
-            onChange={({ target }) => setNewBlog({...newBlog, title: target.value})}
-            />
-        </label><br/>
-        <label>
-          author:
-          <input
-            type="text"
-            value={newBlog.author}
-            onChange={({ target }) => setNewBlog({...newBlog, author: target.value})}
-            />
-        </label><br/>
-        <label>
-          url:
-          <input
-            type="text"
-            value={newBlog.url}
-            onChange={({ target }) => setNewBlog({...newBlog, url: target.value})}
-            />
-        </label><br/>
         <button type="submit">create</button>
         <br/><br/>
 
