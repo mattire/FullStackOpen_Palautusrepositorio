@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog         from './components/Blog'
 import Notification from './components/Notification'
+import NewBlog      from './components/NewBlog'
+import Toggable      from './components/Togglable'
 import blogService  from './services/blogs'
 import loginService from './services/login'
 import './index.css'
@@ -15,6 +17,8 @@ const App = () => {
 
   const [styleNotification, setStyleNotification] = useState({msg: '', style: 'notif'})
 
+  const blogFormRef = useRef()
+
   const lsUser   = window.localStorage.getItem('user');
   const loggedIn = lsUser != null;
   const userOjb  = JSON.parse(lsUser)
@@ -27,6 +31,7 @@ const App = () => {
 
   const handleNewBlog = async (e) => {
     e.preventDefault()
+    blogFormRef.current.toggleVisibility()
 try {
       const r = await blogService.postNewBlogObj(newBlog, userOjb.id, userOjb.token)
       if(r.request.status==201){
@@ -87,7 +92,9 @@ try {
           <input
             type="text"
             value={username}
-            onChange={({ target }) => setUsername(target.value)}
+            onChange={( event ) => { setUsername(event.target.value) }
+          } 
+            // onChange={( target ) => setUsername(target.value)}
             />
         </label>
         </div>
@@ -108,37 +115,22 @@ try {
   }
   else{
 
-    const blogInputFields = ["title", "author", "url"]
     return (
       <div>
-        <h2>blogs</h2>
         <Notification msg = {styleNotification.msg} style={styleNotification.style}/>
         <div>
           {userOjb.name} logged in<button onClick={()=> handleLogout()}>logout</button>
         </div><br/>
-        <h2>create new</h2>
-        <form onSubmit={handleNewBlog}>
-        {blogInputFields.map(field => (
-          <label key={field} style={{ display: "flex", marginBottom: "8px" }}>
-            <div style={{ width: "80px" }}>
-            {field}:
-            </div>
-            <input
-              type="text"
-              value={newBlog[field]}
-              onChange={({ target }) =>
-                setNewBlog({ ...newBlog, [field]: target.value })
-            }
-            />
-            <br />
-          </label>
-        ))}
 
-        <button type="submit">create</button>
-        <br/><br/>
-
-        </form>
-
+        <Toggable buttonLabel="Create new blog" ref={blogFormRef}>
+          <NewBlog 
+                newBlog={newBlog} 
+                setNewBlog = {setNewBlog}
+                handleNewBlog = {handleNewBlog}
+                >
+          </NewBlog>
+        </Toggable>
+        <h2>blogs</h2>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
         )}
