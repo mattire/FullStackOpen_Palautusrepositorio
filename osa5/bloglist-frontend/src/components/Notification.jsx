@@ -1,20 +1,4 @@
 
-//  const notifStyle = {
-//    backgound:'lightgray', 
-//    fontSize: '20pt', 
-//    fontStyle: 'bold',
-//  }
-//  const successStyle = {
-//    ...notifStyle,
-//    color:'green', 
-//    border: '3px solid green',
-//  }
-//  const errorStyle = {
-//    ...notifStyle,
-//    color:'red', 
-//    border: '3px solid red',
-//  }
-
 const Notification  = ({msg, style}) => {
   if (msg === null || msg =='') {
     console.log('return null');
@@ -29,6 +13,4 @@ const Notification  = ({msg, style}) => {
  ) 
 }  
 
-//export default { Notification }
 export default Notification
-//export {Notification, successStyle, errorStyle}
