@@ -23,7 +23,7 @@ const Blog = ({ blog }) => {
         {blog.url} <br/>
         {blog.likes} <br/>
         {blog.user?.name} <br/>
-        <button onClick={ViewBlog}>view</button>
+        <button onClick={ViewBlog}>hide</button>
       </div>    
     )
   }
