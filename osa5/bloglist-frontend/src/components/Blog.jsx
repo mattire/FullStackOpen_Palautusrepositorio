@@ -2,7 +2,7 @@ import { useState } from 'react'
 import blogSrvc  from '../services/blogs'
 //import { blogSrvc } from '../services/blogs'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, removeHandler }) => {
   
   const [viewing, SetViewState] = useState(false)
   const [likes, SetLikes] = useState(blog.likes)
@@ -15,16 +15,33 @@ const Blog = ({ blog }) => {
     marginBottom: 5
   }
 
+  const getUserIdToken = ()=>{
+    const userStr     = window.localStorage.getItem('user')
+    const user        = JSON.parse(userStr);
+    return ( {id: user.id, token: user.token })
+  }
+
   const ViewBlog = (e) => {
     console.log(e);
     SetViewState(!viewing)
   }
+  const DelBlog = (e) => {
+    if(window.confirm(`Remove blog ${blog.title}`)){  
+      const userProps = getUserIdToken()
+      console.log(`blog ${blog}`);
+      console.log(`blog.id ${blog.id}`);
+      blogSrvc.delBlogObj(blog.id, userProps.token)
+      removeHandler(blog)
+    }
+  }
+
   const SendLike = async (e) => {
   try {
-      const userStr     = window.localStorage.getItem('user')
-      const user        = JSON.parse(userStr);
-            blog.likes += 1
-      await blogSrvc.putBlogObj(blog, user.id, user.token)
+    const userProps = getUserIdToken()
+      // const userStr     = window.localStorage.getItem('user')
+      // const user        = JSON.parse(userStr);
+      blog.likes += 1
+      await blogSrvc.putBlogObj(blog, userProps.id, userProps.token)
       SetLikes(blog.likes)    
     } catch (error) {
       console.log(error);
@@ -41,6 +58,7 @@ const Blog = ({ blog }) => {
         {likes} <button onClick={SendLike}>like</button> <br/>
         {blog.user?.name} <br/>
         <button onClick={ViewBlog}>hide</button>
+        <button onClick={DelBlog}>delete</button>
       </div>    
     )
   }

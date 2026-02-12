@@ -7,6 +7,12 @@ import blogService  from './services/blogs'
 import loginService from './services/login'
 import './index.css'
 
+const getUser = () => { 
+  const lsUser   = window.localStorage.getItem('user');
+  const loggedIn = lsUser != null;
+  return JSON.parse(lsUser)
+ };
+
 const App = () => {
   const [blogs, setBlogs]       = useState([])
   const [username, setUsername] = useState('')
@@ -17,9 +23,12 @@ const App = () => {
 
   const blogFormRef = useRef()
 
-  const lsUser   = window.localStorage.getItem('user');
-  const loggedIn = lsUser != null;
-  const userOjb  = JSON.parse(lsUser)
+  const userOjb  =  getUser()
+  const loggedIn = userOjb != null;
+  // const lsUser   = window.localStorage.getItem('user');
+  // const loggedIn = lsUser != null;
+  // const userOjb  = JSON.parse(lsUser)
+
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -35,9 +44,19 @@ const App = () => {
     blogFormRef.current.toggleVisibility()
     //const newBlog = blogFormRef.current.getNewBlog()
 try {
-      const r = await blogService.postNewBlogObj(newBlog, userOjb.id, userOjb.token)
+      const uObj  =  getUser()
+      console.log(`userObj ${uObj}`);
+      console.log(uObj.id);
+
+      const r = await blogService.postNewBlogObj(newBlog, uObj.id, uObj.token)
       if(r.request.status==201){
         //console.log(r.data);
+        r.data.user = {
+            "username": uObj.username,
+            "name": uObj.name,
+            "id": uObj.id
+        }
+
         var newBlogs = blogs.concat(r.data)
         setBlogs(newBlogs)
         setTimedNotif({msg:`Creating blog ${newBlog.title} succeeded`, style : "notif"})
@@ -81,6 +100,11 @@ try {
     setTimedNotif({ msg: 'logout successful', style: 'notif'})
   }
 
+  const removeHandler = (blog)=>{ 
+    console.log('rem'); 
+    const newBlogs = blogs.filter(b=>b.id!=blog.id)
+    setBlogs(newBlogs)
+  }
 
   if(!loggedIn){
     return (
@@ -116,7 +140,7 @@ try {
       )
   }
   else{
-
+    blogs.sort((a, b) => b.likes - a.likes)
     return (
       <div>
         <Notification msg = {styleNotification.msg} style={styleNotification.style}/>
@@ -134,7 +158,8 @@ try {
         </Toggleable>
         <h2>blogs</h2>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
+          // <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} removeHandler={removeHandler} />
         )}
       </div>
     )

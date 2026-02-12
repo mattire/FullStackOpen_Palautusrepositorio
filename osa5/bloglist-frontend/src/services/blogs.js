@@ -2,6 +2,15 @@ import axios from 'axios'
 import { use } from 'react'
 const baseUrl = '/api/blogs'
 
+const getHeaders = (token) => {  
+  return(
+   {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`
+   }
+  )
+};
+
 const getAll = () => {
   const request = axios.get(baseUrl)
   return request.then(response => response.data)
@@ -51,7 +60,14 @@ const putBlogObj = async (blog, userid, token) => {
         Authorization: `Bearer ${token}`
       }
     })
+  return resp
+}
+
+const delBlogObj = async (blogId, token) => {
+  const url = `${baseUrl}/${blogId}`
+  const h = getHeaders(token)
+  return await axios.delete(url, { headers: h})
 }
 
 
-export default { getAll, postNewBlog, postNewBlogObj, putBlogObj }
+export default { getAll, postNewBlog, postNewBlogObj, putBlogObj, delBlogObj }

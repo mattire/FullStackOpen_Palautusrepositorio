@@ -123,8 +123,6 @@ blogsRouter.put('/:id', async (request, response, next) => {
   const user = await getUserFromToken(request, response)
   if (!user) return
 
-
-
   const body = request.body
     
   const blog = {
