@@ -1,15 +1,15 @@
 import axios from 'axios'
-import { use } from 'react'
+//import { use } from 'react'
 const baseUrl = '/api/blogs'
 
-const getHeaders = (token) => {  
+const getHeaders = (token) => {
   return(
-   {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`
-   }
+    {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    }
   )
-};
+}
 
 const getAll = () => {
   const request = axios.get(baseUrl)
@@ -17,11 +17,11 @@ const getAll = () => {
 }
 
 const postNewBlogObj = async (newBlog, userid, token) => {
-  return await postNewBlog(newBlog.title, newBlog.author, newBlog.url, userid, token);   
+  return await postNewBlog(newBlog.title, newBlog.author, newBlog.url, userid, token)
 }
 
 const postNewBlog = async (title, author, url, userid, token) => {
-  try {    
+  try {
     const newBlog = {
       'title' : title,
       'author' : author,
@@ -29,8 +29,7 @@ const postNewBlog = async (title, author, url, userid, token) => {
       'likes' : 0,
       'userId' : userid,
     }
-    console.log(newBlog);
-    
+    console.log(newBlog)
     const resp = await axios.post(baseUrl, newBlog, {
       headers: {
         'Content-Type': 'application/json',
@@ -39,21 +38,21 @@ const postNewBlog = async (title, author, url, userid, token) => {
     })
     return resp
   } catch (error) {
-    console.log(error);
+    console.log(error)
     return error
   }
 }
 
 const putBlogObj = async (blog, userid, token) => {
   const url = `${baseUrl}/${blog.id}`
-  const resp = await axios.put(url, 
+  const resp = await axios.put(url,
     {
       user: userid,
       likes: blog.likes,
       author: blog.author,
       title: blog.title,
       url: blog.url
-    }, 
+    },
     {
       headers: {
         'Content-Type': 'application/json',
@@ -66,7 +65,7 @@ const putBlogObj = async (blog, userid, token) => {
 const delBlogObj = async (blogId, token) => {
   const url = `${baseUrl}/${blogId}`
   const h = getHeaders(token)
-  return await axios.delete(url, { headers: h})
+  return await axios.delete(url, { headers: h })
 }
 
 

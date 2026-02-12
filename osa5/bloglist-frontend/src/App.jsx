@@ -7,73 +7,68 @@ import blogService  from './services/blogs'
 import loginService from './services/login'
 import './index.css'
 
-const getUser = () => { 
-  const lsUser   = window.localStorage.getItem('user');
-  const loggedIn = lsUser != null;
+const getUser = () => {
+  const lsUser   = window.localStorage.getItem('user')
   return JSON.parse(lsUser)
- };
+}
 
 const App = () => {
   const [blogs, setBlogs]       = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser]         = useState(null)
 
-  const [styleNotification, setStyleNotification] = useState({msg: '', style: 'notif'})
+  const [styleNotification, setStyleNotification] = useState({ msg: '', style: 'notif' })
 
   const blogFormRef = useRef()
 
   const userOjb  =  getUser()
-  const loggedIn = userOjb != null;
-  // const lsUser   = window.localStorage.getItem('user');
-  // const loggedIn = lsUser != null;
-  // const userOjb  = JSON.parse(lsUser)
-
+  const loggedIn = userOjb !== null
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   const handleNewBlog = async (props) => {
     const newBlog = props.blog
-    console.log("newBlog") 
-    console.log(props.blog) 
+    console.log('newBlog')
+    console.log(props.blog)
 
     blogFormRef.current.toggleVisibility()
     //const newBlog = blogFormRef.current.getNewBlog()
-try {
+    try {
       const uObj  =  getUser()
-      console.log(`userObj ${uObj}`);
-      console.log(uObj.id);
+      console.log(`userObj ${uObj}`)
+      console.log(uObj.id)
 
       const r = await blogService.postNewBlogObj(newBlog, uObj.id, uObj.token)
-      if(r.request.status==201){
+      if(r.request.status===201){
         //console.log(r.data);
         r.data.user = {
-            "username": uObj.username,
-            "name": uObj.name,
-            "id": uObj.id
+          'username': uObj.username,
+          'name': uObj.name,
+          'id': uObj.id
         }
 
         var newBlogs = blogs.concat(r.data)
         setBlogs(newBlogs)
-        setTimedNotif({msg:`Creating blog ${newBlog.title} succeeded`, style : "notif"})
+        setTimedNotif({ msg:`Creating blog ${newBlog.title} succeeded`, style : 'notif' })
         props.aftersend()
       } else {
-        setTimedNotif({msg:`Creating blog ${newBlog.title} failed`, style: "error"})
+        setTimedNotif({ msg:`Creating blog ${newBlog.title} failed`, style: 'error' })
       }
     } catch (error) {
-      setTimedNotif({msg:`Creating blog ${newBlog.title} failed`, style: "error"})
-    }  
+      console.log(error)
+      setTimedNotif({ msg:`Creating blog ${newBlog.title} failed`, style: 'error' })
+    }
   }
 
   const setTimedNotif = (notifObj) => {
-      setStyleNotification(notifObj)
-      setTimeout(function() { 
-        setStyleNotification({ msg: '', style: "notif"})
-      }.bind(this), 4000 )
+    setStyleNotification(notifObj)
+    setTimeout(function() {
+      setStyleNotification({ msg: '', style: 'notif' })
+    }.bind(this), 4000 )
   }
 
   const handleLogin = async (e) => {
@@ -84,60 +79,60 @@ try {
       window.localStorage.setItem('user', jsonUser)
       setUsername('')
       setPassword('')
-      setUser(jsonUser)
-      setTimedNotif({ msg: 'login successful', style: 'notif'})
+      setTimedNotif({ msg: 'login successful', style: 'notif' })
     } catch (error) {
-      console.log(error);
+      console.log(error)
       //console.log(error.request.statusText);
-      setTimedNotif({ msg: `login failed ${error.request.statusText} ${error}`, style: 'error'})
+      setTimedNotif({ msg: `login failed ${error.request.statusText} ${error}`, style: 'error' })
     }
   }
 
-  const handleLogout = async(e) => {
-    window.localStorage.removeItem('user', null);
-    setUser(null)
+  const handleLogout = async() => {
+    window.localStorage.removeItem('user', null)
+    //setUser(null)
+
     //setStyleNotification({ msg: 'logout successful', style: 'notif'})
-    setTimedNotif({ msg: 'logout successful', style: 'notif'})
+    setTimedNotif({ msg: 'logout successful', style: 'notif' })
   }
 
-  const removeHandler = (blog)=>{ 
-    console.log('rem'); 
-    const newBlogs = blogs.filter(b=>b.id!=blog.id)
+  const removeHandler = (blog) => {
+    console.log('rem')
+    const newBlogs = blogs.filter(b => b.id!==blog.id)
     setBlogs(newBlogs)
   }
 
   if(!loggedIn){
     return (
-      <div> 
-        <h2>log in to application</h2>               
+      <div>
+        <h2>log in to application</h2>
         <Notification msg = {styleNotification.msg} style={styleNotification.style}/>
         <form onSubmit={handleLogin}>
-        <div>
-        <label>
+          <div>
+            <label>
           username
-          <input
-            type="text"
-            value={username}
-            onChange={( event ) => { setUsername(event.target.value) }
-          } 
-            // onChange={( target ) => setUsername(target.value)}
-            />
-        </label>
-        </div>
-        <div>
-          <label>
-            password
-            <input
-              type="text"
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
+              <input
+                type="text"
+                value={username}
+                onChange={( event ) => { setUsername(event.target.value) }
+                }
+                // onChange={( target ) => setUsername(target.value)}
               />
-          </label>
-        </div>
-        <button type="submit">login</button>
+            </label>
+          </div>
+          <div>
+            <label>
+            password
+              <input
+                type="text"
+                value={password}
+                onChange={({ target }) => setPassword(target.value)}
+              />
+            </label>
+          </div>
+          <button type="submit">login</button>
         </form>
       </div>
-      )
+    )
   }
   else{
     blogs.sort((a, b) => b.likes - a.likes)
@@ -145,15 +140,15 @@ try {
       <div>
         <Notification msg = {styleNotification.msg} style={styleNotification.style}/>
         <div>
-          {userOjb.name} logged in<button onClick={()=> handleLogout()}>logout</button>
+          {userOjb.name} logged in<button onClick={() => handleLogout()}>logout</button>
         </div><br/>
 
         <Toggleable buttonLabel="Create new blog" ref={blogFormRef}>
-          <NewBlog 
-                // newBlog={newBlog} 
-                // setNewBlog = {setNewBlog}
-                handleNewBlog = {handleNewBlog}
-                >
+          <NewBlog
+            // newBlog={newBlog}
+            // setNewBlog = {setNewBlog}
+            handleNewBlog = {handleNewBlog}
+          >
           </NewBlog>
         </Toggleable>
         <h2>blogs</h2>
