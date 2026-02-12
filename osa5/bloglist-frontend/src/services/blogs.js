@@ -33,7 +33,25 @@ const postNewBlog = async (title, author, url, userid, token) => {
     console.log(error);
     return error
   }
-
 }
 
-export default { getAll, postNewBlog, postNewBlogObj }
+const putBlogObj = async (blog, userid, token) => {
+  const url = `${baseUrl}/${blog.id}`
+  const resp = await axios.put(url, 
+    {
+      user: userid,
+      likes: blog.likes,
+      author: blog.author,
+      title: blog.title,
+      url: blog.url
+    }, 
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    })
+}
+
+
+export default { getAll, postNewBlog, postNewBlogObj, putBlogObj }

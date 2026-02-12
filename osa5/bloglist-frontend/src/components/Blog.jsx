@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import blogSrvc  from '../services/blogs'
+//import { blogSrvc } from '../services/blogs'
 
 const Blog = ({ blog }) => {
   
   const [viewing, SetViewState] = useState(false)
+  const [likes, SetLikes] = useState(blog.likes)
   
   const blogStyle = {
     paddingTop: 10,
@@ -13,15 +16,29 @@ const Blog = ({ blog }) => {
   }
 
   const ViewBlog = (e) => {
+    console.log(e);
     SetViewState(!viewing)
   }
+  const SendLike = async (e) => {
+  try {
+      const userStr     = window.localStorage.getItem('user')
+      const user        = JSON.parse(userStr);
+            blog.likes += 1
+      await blogSrvc.putBlogObj(blog, user.id, user.token)
+      SetLikes(blog.likes)    
+    } catch (error) {
+      console.log(error);
+    }  
+  }
+
+
   if(viewing){
     return (
       <div style={blogStyle}>
         {blog.title} <br/>
         {blog.author} <br/>
         {blog.url} <br/>
-        {blog.likes} <br/>
+        {likes} <button onClick={SendLike}>like</button> <br/>
         {blog.user?.name} <br/>
         <button onClick={ViewBlog}>hide</button>
       </div>    
