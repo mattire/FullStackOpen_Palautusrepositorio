@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import blogSrvc  from '../services/blogs'
-//import { blogSrvc } from '../services/blogs'
 
-const Blog = ({ blog, removeHandler }) => {
+const Blog = ({ blog, removeHandler, likeLogFunc }) => {
 
   const [viewing, SetViewState] = useState(false)
   const [likes, SetLikes] = useState(blog.likes)
@@ -37,6 +36,8 @@ const Blog = ({ blog, removeHandler }) => {
 
   const SendLike = async () => {
     try {
+      if(likeLogFunc){ likeLogFunc() }
+      
       const userProps = getUserIdToken()
       // const userStr     = window.localStorage.getItem('user')
       // const user        = JSON.parse(userStr);
@@ -47,7 +48,6 @@ const Blog = ({ blog, removeHandler }) => {
       console.log(error)
     }
   }
-
 
   if(viewing){
     return (
@@ -70,6 +70,5 @@ const Blog = ({ blog, removeHandler }) => {
     )
   }
 }
-
 
 export default Blog

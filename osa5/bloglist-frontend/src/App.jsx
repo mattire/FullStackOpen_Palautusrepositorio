@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Blog         from './components/Blog'
+//import Blog2         from './components/Blog2'
 import Notification from './components/Notification'
 import NewBlog      from './components/NewBlog'
 import Toggleable      from './components/Togglable'
@@ -145,16 +146,14 @@ const App = () => {
 
         <Toggleable buttonLabel="Create new blog" ref={blogFormRef}>
           <NewBlog
-            // newBlog={newBlog}
-            // setNewBlog = {setNewBlog}
             handleNewBlog = {handleNewBlog}
           >
           </NewBlog>
         </Toggleable>
         <h2>blogs</h2>
         {blogs.map(blog =>
-          // <Blog key={blog.id} blog={blog} />
           <Blog key={blog.id} blog={blog} removeHandler={removeHandler} />
+          //<Blog2 key={blog.id} blog={blog} removeHandler={removeHandler} />
         )}
       </div>
     )

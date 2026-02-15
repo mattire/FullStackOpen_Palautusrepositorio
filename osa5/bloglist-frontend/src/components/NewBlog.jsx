@@ -13,6 +13,7 @@ const NewBlog  = ({ handleNewBlog }) => {
   const OnSubmitNewBlog = (e) => {
     e.preventDefault()
     handleNewBlog( { blog: newBlog, aftersend: afterBlogSending })
+    //handleNewBlog( { blog: { title: 'vv', author: 'aa', url: 'afd' }, aftersend: afterBlogSending })
   }
 
   return (
@@ -27,6 +28,7 @@ const NewBlog  = ({ handleNewBlog }) => {
             </div>
             <input
               type='text'
+              alt={field}
               value={newBlog[field]}
               onChange = { ({ target }) =>
                 setNewBlog({ ...newBlog, [field]: target.value })
