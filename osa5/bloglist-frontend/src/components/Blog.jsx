@@ -48,6 +48,12 @@ const Blog = ({ blog, removeHandler, likeLogFunc }) => {
       console.log(error)
     }
   }
+  
+  //console.log(getUserIdToken());
+  console.log('blog')
+  console.log(blog.user.id)
+  
+  const showDelBtn = getUserIdToken().id === blog.user.id
 
   if(viewing){
     return (
@@ -58,7 +64,8 @@ const Blog = ({ blog, removeHandler, likeLogFunc }) => {
         Likes {likes} <button onClick={SendLike}>like</button> <br/>
         {blog.user?.name} <br/>
         <button onClick={ViewBlog}>hide</button>
-        <button onClick={DelBlog}>delete</button>
+        { showDelBtn ? <button onClick={DelBlog}>delete</button> : '' }
+        {/* <button onClick={DelBlog}>delete</button> */}
       </div>
     )
   }
