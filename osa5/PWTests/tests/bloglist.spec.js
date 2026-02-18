@@ -11,6 +11,13 @@ describe('Blog app', () => {
         password: 'swordfish'
       }
     })
+    await request.post('http://localhost:3003/api/users', {
+      data: {
+        name: 'Jack Dalton',
+        username: 'JaDal',
+        password: 'swordfish2'
+      }
+    })
 
     await page.goto('http://localhost:5173')
   })
@@ -84,7 +91,7 @@ describe('Blog app', () => {
         
       })
 
-      test.only('blog can be removed', async ({ page }) => {
+      test('blog can be removed', async ({ page }) => {
         await page.getByRole('button', { name: 'view' }).click()
 
         await expect(page.getByText('delete')).toBeVisible()
@@ -95,6 +102,13 @@ describe('Blog app', () => {
         const author = 'Billy The Kid'
         var searchTxt = `${title} ${author}`
         await expect(page.getByText(searchTxt)).not.toBeVisible()        
+      })
+
+      test.only('delete button can be viewed only by user who created the blog', async ({ page }) => {
+        await page.getByRole('button', { name: 'logout' }).click()
+        await loginTest(page, 'JaDal', 'swordfish2', 'Jack Dalton')  
+        await page.getByRole('button', { name: 'view' }).click()
+        await expect(page.getByRole('button', { name: 'delete' })).not.toBeVisible()
       })
 
 
