@@ -61,15 +61,20 @@ blogsRouter.post('/', async (request, response, next) => {
   const body = request.body;
   
   const user = await getUserFromToken(request, response)
-  if (!user) return
+  if (!user) { 
+    Log.error('no user')
+    return 
+  }
 
   //console.log('************************');  
 
   if(!Object.hasOwn(body, 'url')){
+    Log.error('content missing url')
     response.status(400).json({ error: 'content missing' })
   } 
   else if(!Object.hasOwn(body, 'title'))
   {
+    Log.error('content missing title')
     response.status(400).json({ error: 'content missing' })
   } 
   else 

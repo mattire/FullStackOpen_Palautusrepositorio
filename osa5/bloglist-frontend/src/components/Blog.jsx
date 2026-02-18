@@ -37,7 +37,7 @@ const Blog = ({ blog, removeHandler, likeLogFunc }) => {
   const SendLike = async () => {
     try {
       if(likeLogFunc){ likeLogFunc() }
-      
+
       const userProps = getUserIdToken()
       // const userStr     = window.localStorage.getItem('user')
       // const user        = JSON.parse(userStr);
@@ -55,7 +55,7 @@ const Blog = ({ blog, removeHandler, likeLogFunc }) => {
         {blog.title} <br/>
         {blog.author} <br/>
         {blog.url} <br/>
-        {likes} <button onClick={SendLike}>like</button> <br/>
+        Likes {likes} <button onClick={SendLike}>like</button> <br/>
         {blog.user?.name} <br/>
         <button onClick={ViewBlog}>hide</button>
         <button onClick={DelBlog}>delete</button>
