@@ -39,6 +39,8 @@ describe('Blog app', () => {
 
     test('fails with wrong credentials', async ({ page }) => {
         await loginWith(page, 'HanSolo', 'Chewbacca')    
+        const errorDiv = page.locator('.error')
+        await expect(errorDiv).toContainText('login failed')
         await expect(page.getByText('Han Solo logged in')).not.toBeVisible()
     })
   })
