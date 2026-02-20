@@ -61,7 +61,7 @@ const Blog = ({ blog, removeHandler, likeLogFunc }) => {
         {blog.title} <br/>
         {blog.author} <br/>
         {blog.url} <br/>
-        Likes {likes} <button onClick={SendLike}>like</button> <br/>
+        Likes <span className="like-count">{likes}</span> <button onClick={SendLike}>like</button> <br/>
         {blog.user?.name} <br/>
         <button onClick={ViewBlog}>hide</button>
         { showDelBtn ? <button onClick={DelBlog}>delete</button> : '' }

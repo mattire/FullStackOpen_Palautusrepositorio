@@ -51,21 +51,6 @@ describe('Blog app', () => {
         const author = 'Billy The Kid'
         await createBlog(page, title, author, 'www.kinney.com')  
 
-        // await page.getByRole('button', { name: 'Create new blog' }).click()
-
-        // //const blogInputFields = ['title', 'author', 'url']
-        // const blogInputFieldsAndIputs = { 
-        //     'title': 'Kinney Chase', 
-        //     'author': 'Billy The Kid', 
-        //     'url': 'www.kinney.com'
-        // }
-        // for (const inputFld in blogInputFieldsAndIputs){
-        //     await page
-        //             .getByLabel(inputFld)
-        //             .fill(blogInputFieldsAndIputs[inputFld])
-        // }
-        // await page.getByRole('button', { name: 'create', exact: true }).click()
-
         await page.waitForTimeout(3000);
         //await expect(page.getByText(`${blogInputFieldsAndIputs['title']} ${blogInputFieldsAndIputs['author']}`)).toBeVisible()
         var searchTxt = `${title} ${author}`
@@ -104,13 +89,42 @@ describe('Blog app', () => {
         await expect(page.getByText(searchTxt)).not.toBeVisible()        
       })
 
-      test.only('delete button can be viewed only by user who created the blog', async ({ page }) => {
+      test('delete button can be viewed only by user who created the blog', async ({ page }) => {
         await page.getByRole('button', { name: 'logout' }).click()
         await loginTest(page, 'JaDal', 'swordfish2', 'Jack Dalton')  
         await page.getByRole('button', { name: 'view' }).click()
         await expect(page.getByRole('button', { name: 'delete' })).not.toBeVisible()
       })
 
+      test('blogs are arranged in the order of likes', async ({ page, request }) => {
+        await request.post('http://localhost:3003/api/testing/testgenerate')
+
+        await page.reload({ timeout: 1000 });
+
+        await page.waitForTimeout(1000);
+
+        const btns = await page.getByRole('button', { name: 'view' }).all()
+
+        var rbtns = btns.reverse()
+        for(const b of rbtns){
+            //console.log(b);
+            b.click()
+            await page.waitForTimeout(100);
+        }
+
+        await page.waitForTimeout(100);
+        
+        const likeElements = await page.locator('.like-count').all();
+
+        const likeCounts = await Promise.all(
+            likeElements.map(async (el) => {
+                const text = await el.textContent();
+                return parseInt(text);
+            })
+        );
+        // Check descending order
+        expect(likeCounts).toEqual([...likeCounts].sort((a, b) => b - a));
+      })
 
     })
 
