@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux' 
 import { voteAnecdote } from '../reducers/anecdoteReducer' 
+//import { filterChange } from '../reducers/filterReducer' 
 
 export const Anecdote = ({anecdote}) => { 
   const dispatch = useDispatch()
@@ -23,14 +24,28 @@ export const Anecdote = ({anecdote}) => {
 export const AnecdoteList = () => {  
 
   function compareAnects(a, b) {
+    //console.log(a, b);
     return b.votes - a.votes;
   }
 
-  const  { anecdotes, filter } = useSelector(state => state) 
-  
+  //const  { anecdotes, filter } = useSelector(state => state) 
+  //const  state = useSelector(state => state) 
+  const anecdotes = useSelector(state => state.anecdotes) 
+  const filter = useSelector(state => state.filter) 
+  console.log('anecdotes');
+  console.log(anecdotes);
+  //console.log(filter);
+
+  //console.log('stuff');
+  //console.log(stuff);
+
   return (
       <div>
-          {anecdotes.filter(a=>a.content.includes(filter)).sort(compareAnects).map(anecdote => (
+          {
+            anecdotes.slice().filter(a=>a.content.includes(filter))
+            //anecdotes.slice()
+                .sort(compareAnects)
+                .map(anecdote => (
             <Anecdote key={anecdote.id} anecdote={anecdote}></Anecdote>
           ))}
       </div>
