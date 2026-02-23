@@ -40,7 +40,14 @@ const anecdoteSlice = createSlice({
       }    
     },
     createAnecdote(state, action) {
-      const newState = state.concat(action.payload)
+      console.log(action);
+      
+      //const newState = state.concat(action.payload)
+      const newState = state.concat({
+          content: action.payload,
+          id: getId(),
+          votes: 0
+        })
       return newState
     }
   }
