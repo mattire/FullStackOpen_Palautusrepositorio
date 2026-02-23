@@ -18,8 +18,13 @@ const asObject = anecdote => {
 }
 
 const initialState = anecdotesAtStart.map(asObject)
+// const initialState = {
+//   anecdotes : anecdotesAtStart.map(asObject),
+//   filter : ''
+// }
 
-const reducer = (state = initialState, action) => {
+
+const anecReducer = (state = initialState, action) => {
   console.log('state now: ', state)
   console.log('action', action)
 
@@ -59,4 +64,4 @@ export const createAnecdote = (content) => {
 }
 
 
-export default reducer
+export default anecReducer

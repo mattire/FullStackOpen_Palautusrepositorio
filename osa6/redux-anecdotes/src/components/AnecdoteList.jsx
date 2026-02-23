@@ -26,13 +26,12 @@ export const AnecdoteList = () => {
     return b.votes - a.votes;
   }
 
-  const anecdotes = useSelector(state => state) 
+  const  { anecdotes, filter } = useSelector(state => state) 
   
   return (
       <div>
-          <h2>Anecdotes</h2>
-          {anecdotes.sort(compareAnects).map(anecdote => (
-            <Anecdote anecdote={anecdote}></Anecdote>
+          {anecdotes.filter(a=>a.content.includes(filter)).sort(compareAnects).map(anecdote => (
+            <Anecdote key={anecdote.id} anecdote={anecdote}></Anecdote>
           ))}
       </div>
   )
