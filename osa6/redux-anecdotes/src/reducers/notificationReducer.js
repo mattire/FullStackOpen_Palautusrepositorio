@@ -6,13 +6,14 @@ const notifSlice = createSlice({
   initialState: '',
   reducers: {
     notifChange(state, action) {
-      return action.payload.payload
+      //return action.payload.payload
+      return action.payload
     }
   },
 })
 
-export const showAct = (content) => { return { type: "SHOW", payload: content } }
-export const hideAct = () =>        { return { type: "HIDE", payload: '' } }
+//export const showAct = (content) => { return { type: "SHOW", payload: content } }
+//export const hideAct = () =>        { return { type: "HIDE", payload: '' } }
 
 export const { notifChange } = notifSlice.actions
 export default notifSlice.reducer

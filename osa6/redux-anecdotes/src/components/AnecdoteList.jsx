@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { voteAnecdote } from '../reducers/anecdoteReducer' 
 //import { filterChange } from '../reducers/filterReducer' 
 import { notifChange } from '../reducers/notificationReducer'
-import {showAct, hideAct} from '../reducers/notificationReducer'
+//import {showAct, hideAct} from '../reducers/notificationReducer'
 
 export const Anecdote = ({anecdote}) => { 
   const dispatch = useDispatch()
@@ -11,8 +11,10 @@ export const Anecdote = ({anecdote}) => {
     console.log('vote', anecdote.id)
     dispatch(voteAnecdote(anecdote.id))
     const notifMsg = `You voted for ${anecdote.content}`
-    dispatch(notifChange(showAct(notifMsg)))
-    setTimeout(function() { dispatch(notifChange(hideAct()))}, 5000)
+    //dispatch(notifChange(showAct(notifMsg)))
+    dispatch(notifChange(notifMsg))
+    //setTimeout(function() { dispatch(notifChange(hideAct()))}, 5000)
+    setTimeout(function() { dispatch(notifChange(''))}, 5000)
   }
 
   return (
