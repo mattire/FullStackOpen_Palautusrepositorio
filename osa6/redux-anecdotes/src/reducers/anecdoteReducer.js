@@ -28,13 +28,11 @@ const anecdoteSlice = createSlice({
   reducers: {
     voteAnecdote(state, action) {
       try {
-          console.log('action.payload');
-          console.log(action.payload);
+          // console.log('action.payload');
+          // console.log(action.payload);
           const anecdote = state.find(a => a.id === action.payload)
-          //console.log(current(anecdote));
           const changedAnecdote = { ...anecdote, votes: anecdote.votes+1 }
-          //const changedAnecdote = { ...anecdote, votes: 10 }
-          console.log(changedAnecdote);
+          // console.log(changedAnecdote);
           return state.map(a => (a.id !== action.payload ? a : changedAnecdote))
       } catch (error) {
         console.log(error);        
@@ -43,7 +41,6 @@ const anecdoteSlice = createSlice({
     createAnecdote(state, action) {
       console.log(action);
       
-      //const newState = state.concat(action.payload)
       const newState = state.concat({
           content: action.payload,
           id: getId(),
