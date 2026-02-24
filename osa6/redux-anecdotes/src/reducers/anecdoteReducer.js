@@ -28,6 +28,7 @@ const anecdoteSlice = createSlice({
   reducers: {
     voteAnecdote(state, action) {
       try {
+          console.log('action.payload');
           console.log(action.payload);
           const anecdote = state.find(a => a.id === action.payload)
           //console.log(current(anecdote));

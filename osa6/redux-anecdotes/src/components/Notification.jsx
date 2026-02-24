@@ -3,7 +3,7 @@ import { notifChange } from '../reducers/notificationReducer'
 
 
 const Notification = () => {
-  const notif = useSelector(state => state.notification) 
+  const notif = useSelector(state => state.notif) 
   console.log('notif');
   console.log(notif);
   
@@ -14,7 +14,11 @@ const Notification = () => {
     marginBottom: 10
   }
 
-  return (<div style={style}>render here notification... {notif}</div>)
+  if(notif===''){
+    return (<div style={style}></div>)
+  } else {
+    return (<div style={style}>{notif}</div>)
+  }
 }
 
 export default Notification
