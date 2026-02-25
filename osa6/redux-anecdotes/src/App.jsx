@@ -6,8 +6,7 @@ import { AnecdoteList } from './components/AnecdoteList'
 import Filter from './components/Filter' 
 import Notification from './components/Notification' 
 import { setAnecdotes } from './reducers/anecdoteReducer'
-//import { getAll } from '../services/anecdotes'
-import anecdoteService from '../services/anecdotes'
+import anecdoteService from './services/anecdotes'
 
 
 
