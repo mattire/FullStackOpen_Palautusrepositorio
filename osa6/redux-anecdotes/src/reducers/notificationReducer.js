@@ -12,8 +12,19 @@ const notifSlice = createSlice({
   },
 })
 
+const { notifChange } = notifSlice.actions
+
+export const showNotification = (msg) => {
+    return async (dispatch) => { 
+      console.log('msg');
+      console.log(msg);  
+      dispatch(notifChange(msg))
+      setTimeout(function() { dispatch(notifChange(''))}, 5000)
+    }  
+}
+
 //export const showAct = (content) => { return { type: "SHOW", payload: content } }
 //export const hideAct = () =>        { return { type: "HIDE", payload: '' } }
 
-export const { notifChange } = notifSlice.actions
+//export const { notifChange } = notifSlice.actions
 export default notifSlice.reducer

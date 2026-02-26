@@ -1,7 +1,8 @@
 import { useDispatch } from 'react-redux' 
 //import { createAnecdote } from '../reducers/anecdoteReducer' 
 import { createNewAnecdote } from '../reducers/anecdoteReducer' 
-import { notifChange } from '../reducers/notificationReducer'
+//import { notifChange } from '../reducers/notificationReducer'
+import { showNotification } from '../reducers/notificationReducer'
 //import anecdoteService from '../services/anecdotes'
 
 
@@ -17,11 +18,12 @@ export const AnecdoteForm = () => {
     console.log(content);
     
     dispatch(createNewAnecdote(content))
-    //anecdoteService.createNew(content)
-    //dispatch(createAnecdote(content))
     const notifMsg = `You created anecdote ${content}`
-    dispatch(notifChange(notifMsg))
-    setTimeout(function() { dispatch(notifChange(''))}, 5000)
+    
+    //dispatch(notifChange(notifMsg))
+    //setTimeout(function() { dispatch(notifChange(''))}, 5000)
+    
+    dispatch(showNotification(notifMsg))
   };
 
   return (
