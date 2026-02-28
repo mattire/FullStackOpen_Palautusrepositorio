@@ -1,4 +1,9 @@
+import { useContext } from 'react'
+import AnecdoteContext from '../AnecdoteContext'
+
 const Notification = () => {
+  const { notification, notificationDispatch } = useContext(AnecdoteContext)
+
   const style = {
     border: 'solid',
     padding: 10,
@@ -6,11 +11,16 @@ const Notification = () => {
     marginBottom: 5
   }
   
-  if (true) return null
+  if (!notification.show) return null
+  else {
+    setTimeout(function() { 
+      notificationDispatch({ type:'HIDE', payload: { show: false, msg: '' } })
+    }, 5000)
+  }
 
   return (
     <div style={style}>
-      
+      { notification.payload?.msg }
     </div>
   )
 }

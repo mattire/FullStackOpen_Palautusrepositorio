@@ -2,6 +2,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {createAnecdote} from '../requests'
 
+import { useContext } from 'react'
+import AnecdoteContext from '../AnecdoteContext'
+
 
 const getId = () => (100000 * Math.random()).toFixed(0)
 
@@ -9,12 +12,20 @@ const AnecdoteForm = () => {
 
   const queryClient = useQueryClient()
 
+  const { notificationDispatch } = useContext(AnecdoteContext)
+
   const newAnecdoteMutation = useMutation({
     mutationFn: createAnecdote,
     onSuccess: (newAnecdote) => {
       //queryClient.invalidateQueries({ queryKey: ['anecdotes'] })
       const anecdotes = queryClient.getQueryData(['anecdotes'])
       queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnecdote))
+      notificationDispatch({ 
+        type:'SHOW', 
+        payload: { 
+          show: true, 
+          msg: `You created anecdote ${newAnecdote.content}` 
+        } } )
     },
   })
 
